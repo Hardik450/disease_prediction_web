@@ -11,11 +11,35 @@ from django.http import JsonResponse
 from django.conf import settings
 GOOGLE_GEMINI_API_KEY = "AIzaSyDAQ1HL4v7XEWRzkzMpxFm_1WsaYyN7sfE"
 
+import gdown
 import os
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "models", "disease_model1.onnx")
-ENCODER_PATH = os.path.join(BASE_DIR, "models", "label_encoder1.pkl")
 CSV_PATH = os.path.join(BASE_DIR, "models", "Final_Augmented_dataset_Diseases_and_Symptoms.csv")
+
+# Google Drive File IDs (Replace with your actual file IDs)
+MODEL_FILE_ID = "1Ohx7LM1c3avKXONJIiVKFTMtQisiqqLi"
+CSV_FILE_ID = "1prdAX9PU_J6ml-vjFJSuPKHXZcTUR_8u"
+
+def download_from_gdrive(file_id, output_path):
+    """Download file from Google Drive if it doesn't exist."""
+    if not os.path.exists(output_path):
+        url = f"https://drive.google.com/uc?export=download&id={file_id}"
+        gdown.download(url, output_path, quiet=False)
+        print(f"Downloaded: {output_path}")
+
+
+# Ensure models directory exists
+os.makedirs(os.path.join(BASE_DIR, "models"), exist_ok=True)
+
+# Download files
+download_from_gdrive(MODEL_FILE_ID, MODEL_PATH)
+download_from_gdrive(CSV_FILE_ID, CSV_PATH)
+# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# MODEL_PATH = os.path.join(BASE_DIR, "models", "disease_model1.onnx")
+ENCODER_PATH = os.path.join(BASE_DIR, "models", "label_encoder1.pkl")
+# CSV_PATH = os.path.join(BASE_DIR, "models", "Final_Augmented_dataset_Diseases_and_Symptoms.csv")
 
 sess = rt.InferenceSession(MODEL_PATH)
 encoder = joblib.load(ENCODER_PATH)
