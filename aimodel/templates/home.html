@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR Image-to-Text</title>
+</head>
+<body>
+    <h2>Upload an Image to Extract Text</h2>
+
+    <form action="{% url 'extract_text' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="image" accept="image/*" required>
+        <button type="submit">Extract Text</button>
+    </form>
+
+    {% if image_url %}
+        <h3>Uploaded Image:</h3>
+        <img src="{{ image_url }}" alt="Uploaded Image" width="300">
+
+        <h3>Extracted Text:</h3>
+        <p>{{ extracted_text }}</p>
+    {% endif %}
+</body>
+</html>

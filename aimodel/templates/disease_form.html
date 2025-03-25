@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Predictor</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f4f8fb;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            text-align: center;
+            padding: 20px;
+        }
+        h2 {
+            color: #025f80;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            padding: 10px 20px;
+            transition: 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            margin-top: 20px;
+        }
+        .result-box {
+            background-color: #e3f7fc;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        .result-box h3 {
+            color: #025f80;
+            font-weight: bold;
+        }
+        .result-box p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+    </style>
+    <script>
+        function predictDisease() {
+            let formData = new FormData(document.getElementById("symptomForm"));
+            fetch("/predict/", {
+                method: "POST",
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                let disease = data.disease;
+                let advice = data.advice.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); 
+                advice = advice.replace(/\* /g, '<br>• '); 
+
+                let tips = data.tips ? data.tips.replace(/\* /g, '<br>• ') : "No specific tips available.";
+
+                document.getElementById("result").innerHTML = `
+                    <div class="result-box">
+                        <h3>${disease}</h3>
+                        <p><strong>Medical Advice:</strong> ${advice}</p>
+                        <p><strong>Tips:</strong> ${tips}</p>
+                    </div>
+                `;
+            })
+            .catch(error => console.error("Error:", error));
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Disease Prediction</h2>
+        <form id="symptomForm" onsubmit="event.preventDefault(); predictDisease();" class="mb-3">
+            <div class="form-group">
+                <input type="text" name="symptoms" id="symptoms" class="form-control" required placeholder="Enter symptoms (e.g., fever, headache)">
+            </div>
+            <button type="submit" class="btn btn-primary">Predict</button>
+        </form>
+        <div id="result"></div>
+    </div>
+</body>
+</html>
